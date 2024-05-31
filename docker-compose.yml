@@ -2,6 +2,8 @@ version: "3.7"
 services:
   service1:
     image: cdhuan1003/swarm:node
+    networks:
+      - net1
     ports:
     # port overlay : port container
       - 8085:8085
@@ -22,6 +24,8 @@ services:
 
   service2:
     image: cdhuan1003/swarm:php
+    networks:
+      - net2
     ports:
       - 8086:8085
     deploy:
@@ -35,3 +39,9 @@ services:
           memory: 50MB
       restart_policy:
         condition: on-failure
+# network drivers
+networks:
+  net1: 
+  net2:
+    driver: overlay
+    name: www-net2

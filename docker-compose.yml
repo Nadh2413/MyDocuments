@@ -4,6 +4,9 @@ services:
     image: cdhuan1003/swarm:node
     networks:
       - net1
+    volumes:
+      - vol1:/d1/
+      - vol2:/d2/
     ports:
     # port overlay : port container
       - 8085:8085
@@ -26,6 +29,9 @@ services:
     image: cdhuan1003/swarm:php
     networks:
       - net2
+    volumes:
+      - vol1:/d1/
+      - vol2:/d2/
     ports:
       - 8086:8085
     deploy:
@@ -39,9 +45,43 @@ services:
           memory: 50MB
       restart_policy:
         condition: on-failure
+  samba:
+    image: cdhuan1003/samba
+    ports:
+    - 139:139
+    - 145:145
+    environment:
+      sbmuser: sbmuser
+      password: 1q2w3e4r
+    volumes:
+      - /home/data:/data/
+    deploy:
+      replicas: 3
+      placement:
+        constraints:
+          - node.role==manager
+
 # network drivers
 networks:
   net1: 
   net2:
     driver: overlay
     name: www-net2
+
+volumes:
+
+  vol1:
+    driver: local
+    name: v1 
+    driver_opts:
+      type: none 
+      divice: "/home/"
+      o: bind 
+
+  vol2:
+    driver: local
+    name: v2 
+    driver_opts:
+      type: cifs 
+      divice: //192.168.225.30/data
+      o: "username=sbmuser,password=1q2w3e4r,file_mode=0777,dir_mode=0777"
